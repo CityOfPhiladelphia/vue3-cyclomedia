@@ -4,6 +4,8 @@ import { createPinia } from 'pinia'
 import isMac from './util/is-mac';
 
 import "bulma";
+import "@fortawesome/fontawesome-pro/css/fontawesome.min.css";
+import "@fortawesome/fontawesome-pro/css/solid.min.css";
 import "@phila/phila-ui-core/dist/styles/scss/all.scss";
 import './assets/style.scss'
 if (isMac()) {
@@ -27,6 +29,18 @@ app.component("AppFooter", AppFooter);
 app.component("MobileNav", MobileNav);
 app.component("NavLink", NavLink);
 app.use(PhilaUICore);
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
+import { faCaretRight } from '@fortawesome/free-solid-svg-icons';
+
+library.add(
+  faCaretLeft,
+  faCaretRight,
+);
+
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+app.component('FontAwesomeIcon', FontAwesomeIcon)
 
 app.use(createPinia())
 app.use(router)

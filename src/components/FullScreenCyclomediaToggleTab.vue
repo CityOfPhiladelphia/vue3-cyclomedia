@@ -25,8 +25,8 @@ watch(
   }
 )
 
-const fullScreenMapEnabled = computed(() => {
-  return MainStore.fullScreenMapEnabled;
+const fullScreenCyclomediaEnabled = computed(() => {
+  return MainStore.fullScreenCyclomediaEnabled;
 });
 
 const isMobileOrTablet = computed(() =>{
@@ -59,7 +59,7 @@ watch (
 )
 
 const currentIcon = computed(() => {
-  if (fullScreenMapEnabled.value) {
+  if (fullScreenCyclomediaEnabled.value) {
     return 'caret-right';
   }
   return 'caret-left';
@@ -76,7 +76,7 @@ const setYPosition = (dim) => {
 
 const setXPosition = async (dim) => {
   // if (import.meta.env.VITE_DEBUG == 'true') console.log('setXPosition dim:', dim, typeof dim);
-  if (fullScreenMapEnabled.value) {
+  if (fullScreenCyclomediaEnabled.value) {
     buttonX.value = '0px';
   } else {
     buttonX.value = dim/2 + 'px';
@@ -84,10 +84,10 @@ const setXPosition = async (dim) => {
 }
 
 const handleFullScreenMapToggleButtonClick = () => {
-  const prevFullScreenMapEnabled = MainStore.fullScreenMapEnabled;
-  const nextFullScreenMapEnabled = !prevFullScreenMapEnabled;
-  MainStore.fullScreenMapEnabled = nextFullScreenMapEnabled;
-  if (nextFullScreenMapEnabled) {
+  const prevFullScreenCyclomediaEnabled = MainStore.fullScreenCyclomediaEnabled;
+  const nextFullScreenCyclomediaEnabled = !prevFullScreenCyclomediaEnabled;
+  MainStore.fullScreenCyclomediaEnabled = nextFullScreenCyclomediaEnabled;
+  if (nextFullScreenCyclomediaEnabled) {
     buttonX.value = '0px';
   } else {
     buttonX.value = MainStore.windowDimensions.width/2 + 'px';
@@ -101,7 +101,7 @@ const handleFullScreenMapToggleButtonClick = () => {
   <button
     v-if="!isMobileOrTablet"
     id="map-toggle-tab"
-    :title="fullScreenMapEnabled ? 'Reduce Map Panel' : 'Expand Map Panel'"
+    :title="fullScreenCyclomediaEnabled ? 'Reduce Cyclomedia Panel' : 'Expand Cyclomedia Panel'"
     :style="{ top: buttonY, left: buttonX }"
     class="toggle-tab"
     tabindex="0"

@@ -25,13 +25,9 @@ watch(
   }
 )
 
-// const fullScreenMapEnabled = computed(() => {
-//   return MainStore.fullScreenMapEnabled;
-// });
-
-const fullScreenTopicsEnabled = computed(() => {
-  // if (import.meta.env.VITE_DEBUG == 'true') console.log('this.$store.state.fullScreenTopicsEnabled:', this.$store.state.fullScreenTopicsEnabled);
-  return MainStore.fullScreenTopicsEnabled;
+const fullScreenMapEnabled = computed(() => {
+  // if (import.meta.env.VITE_DEBUG == 'true') console.log('this.$store.state.fullScreenMapEnabled:', this.$store.state.fullScreenMapEnabled);
+  return MainStore.fullScreenMapEnabled;
 });
 
 const isMobileOrTablet = computed(() =>{
@@ -64,7 +60,7 @@ watch (
 )
 
 const currentIcon = computed(() => {
-  if (fullScreenTopicsEnabled.value) {
+  if (fullScreenMapEnabled.value) {
     return 'caret-left';
   }
   return 'caret-right';
@@ -81,7 +77,7 @@ const setYPosition = (dim) => {
 
 const setXPosition = async (dim) => {
   // if (import.meta.env.VITE_DEBUG == 'true') console.log('setXPosition dim:', dim, typeof dim);
-  if (fullScreenTopicsEnabled.value) {
+  if (fullScreenMapEnabled.value) {
     buttonX.value = '0px';
   } else {
     buttonX.value = dim/2 + 'px';
@@ -89,10 +85,10 @@ const setXPosition = async (dim) => {
 }
 
 const handleFullScreenTopicsToggleButtonClick = () => {
-  const prevFullScreenTopicsEnabled = MainStore.fullScreenTopicsEnabled;
-  const nextFullScreenTopicsEnabled = !prevFullScreenTopicsEnabled;
-  MainStore.fullScreenTopicsEnabled = nextFullScreenTopicsEnabled;
-  if (nextFullScreenTopicsEnabled) {
+  const prevFullScreenMapEnabled = MainStore.fullScreenMapEnabled;
+  const nextFullScreenMapEnabled = !prevFullScreenMapEnabled;
+  MainStore.fullScreenMapEnabled = nextFullScreenMapEnabled;
+  if (nextFullScreenMapEnabled) {
     buttonX.value = '0px';
   } else {
     buttonX.value = MainStore.windowDimensions.width/2 + 'px';
@@ -106,7 +102,7 @@ const handleFullScreenTopicsToggleButtonClick = () => {
   <button
     v-if="!isMobileOrTablet"
     id="topics-toggle-tab"
-    :title="fullScreenTopicsEnabled ? 'Show Map Panel' : 'Hide Map Panel'"
+    :title="fullScreenMapEnabled ? 'Show Cyclomedia Panel' : 'Expand Map Panel'"
     :style="{ top: buttonY, right: buttonX }"
     class="toggle-tab"
     tabindex="0"

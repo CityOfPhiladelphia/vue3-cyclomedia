@@ -7,6 +7,8 @@ const GeocodeStore = useGeocodeStore();
 
 import { format, subYears } from 'date-fns';
 
+import FullScreenCyclomediaToggleTab from '@/components/FullScreenCyclomediaToggleTab.vue';
+
 import proj4 from 'proj4';
 const projection4326 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
 const projection2272 = "+proj=lcc +lat_1=40.96666666666667 +lat_2=39.93333333333333 +lat_0=39.33333333333334 +lon_0=-77.75 +x_0=600000 +y_0=0 +ellps=GRS80 +datum=NAD83 +to_meter=0.3048006096012192 +no_defs";
@@ -146,6 +148,7 @@ onMounted( async() => {
 
 <template>
   <div class="cyclomedia-panel">
+    <FullScreenCyclomediaToggleTab />
     <div
       id="cycloviewer"
       ref="cycloviewer"
