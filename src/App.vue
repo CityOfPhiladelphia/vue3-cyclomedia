@@ -1,7 +1,71 @@
 <script setup>
+import isMobileDevice from './util/is-mobile-device';
+import isMac from './util/is-mac';
+
 import MapPanel from '@/components/MapPanel.vue';
 import CyclomediaPanel from '@/components/CyclomediaPanel.vue';
 
+import { useMainStore } from './stores/MainStore';
+const MainStore = useMainStore();
+
+import { onMounted, computed } from "vue";
+
+// ROUTER
+import { useRouter, useRoute } from 'vue-router';
+const route = useRoute();
+const router = useRouter();
+
+const fullScreenCyclomediaEnabled = computed(() => {
+  return MainStore.fullScreenCyclomediaEnabled;
+})
+
+const fullScreenMapEnabled = computed(() => {
+  return MainStore.fullScreenMapEnabled;
+})
+
+onMounted(async () => {
+  MainStore.appVersion = import.meta.env.VITE_VERSION;
+  MainStore.isMobileDevice = isMobileDevice();
+  MainStore.isMac = isMac();
+  await router.isReady()
+  if (import.meta.env.VITE_DEBUG == 'true') console.log('App onMounted, route.params.topic:', route.params.topic, 'route.params.address:', route.params.address);
+  if (route.name === 'not-found') {
+    router.push({ name: 'home' });
+  }
+
+  const main = document.getElementById('main');
+  main.scrollTop = -main.scrollHeight;
+
+  window.addEventListener('resize', handleWindowResize);
+  handleWindowResize();
+});
+
+const handleWindowResize = () => {
+  const rootElement = document.getElementById('app');
+  const rootStyle = window.getComputedStyle(rootElement);
+  const rootWidth = rootStyle.getPropertyValue('width');
+  const rootHeight = rootStyle.getPropertyValue('height');
+  const rootWidthNum = parseInt(rootWidth.replace('px', ''));
+  const rootHeightNum = parseInt(rootHeight.replace('px', ''));
+
+  const dim = {
+    width: rootWidthNum,
+    height: rootHeightNum,
+  };
+  MainStore.windowDimensions = dim;
+}
+
+
+const links = [
+  {
+    type: 'native',
+    href: 'https://phila.formstack.com/forms/atlas_feedback_form',
+    text: 'Feedback',
+    attrs: {
+      target: '_blank',
+    },
+  },
+];
 
 </script>
 
@@ -27,7 +91,6 @@ import CyclomediaPanel from '@/components/CyclomediaPanel.vue';
     id="main"
     class="main invisible-scrollbar"
   >
-    
 
     <!-- MAP PANEL ON LEFT - right now only contains the address input -->
     <div
@@ -39,7 +102,9 @@ import CyclomediaPanel from '@/components/CyclomediaPanel.vue';
     </div>
 
     <div
-      v-show="fullScreenCyclomediaEnabled"
+      v-show="!fullScreenMapEnabled"
+      class="cyclomedia-holder"
+      :class="fullScreenCyclomediaEnabled ? 'cyclomedia-holder-full' : ''"
     >
       <cyclomedia-panel />
     </div>
