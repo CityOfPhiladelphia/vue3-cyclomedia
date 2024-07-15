@@ -13,6 +13,8 @@ export const useMainStore = defineStore("MainStore", {
     };
   },
   actions: {
-
+    setCurrentAddress(address) {
+      this.currentAddress = address;
+    },
   },
 });

@@ -8,6 +8,17 @@ import CyclomediaPanel from '@/components/CyclomediaPanel.vue';
 import { useMainStore } from './stores/MainStore';
 const MainStore = useMainStore();
 
+import AddressSearchControl from '@/components/AddressSearchControl.vue';
+
+
+if (!import.meta.env.VITE_PUBLICPATH) {
+  MainStore.publicPath = '/';
+} else {
+  MainStore.publicPath = import.meta.env.VITE_PUBLICPATH;
+}
+if (import.meta.env.VITE_DEBUG == 'true') console.log('import.meta.env.VITE_PUBLICPATH:', import.meta.env.VITE_PUBLICPATH, 'MainStore.publicPath:', MainStore.publicPath);
+
+
 import { onMounted, computed } from "vue";
 
 // ROUTER
@@ -91,6 +102,7 @@ const links = [
     id="main"
     class="main invisible-scrollbar"
   >
+    <AddressSearchControl :input-id="'map-search-input'" />
 
     <!-- MAP PANEL ON LEFT - right now only contains the address input -->
     <div
@@ -106,7 +118,11 @@ const links = [
       class="cyclomedia-holder"
       :class="fullScreenCyclomediaEnabled ? 'cyclomedia-holder-full' : ''"
     >
-      <cyclomedia-panel />
+      <cyclomedia-panel
+        @update-camera-yaw="updateCyclomediaCameraAngle"
+        @update-camera-h-fov="updateCyclomediaCameraViewcone"
+        @update-camera-lng-lat="updateCyclomediaCameraLngLat"
+      />
     </div>
 
     

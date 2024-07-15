@@ -31,10 +31,14 @@ app.component("NavLink", NavLink);
 app.use(PhilaUICore);
 
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
+  faTimes,
+  faSearch,
   faCaretLeft,
   faCaretRight,
 );
