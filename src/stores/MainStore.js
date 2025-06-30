@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 export const useMainStore = defineStore("MainStore", {
   state: () => {
     return {
+      currentAddress: null,
       initialDatafetchComplete: false,
       publicPath: null,
       isMobileDevice: null,

@@ -40,8 +40,4 @@ export const useGeocodeStore = defineStore("GeocodeStore", {
       }
     },
   },
-  getters: {
-    getOpaOwners: (state) => state.aisData.features[0].properties.opa_owners.join(', '),
-  },
-
 });

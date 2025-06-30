@@ -45,6 +45,10 @@ const emitValue = (value) => {
       <div class="dropdown-content">
         <a
           class="dropdown-item"
+          @click="emitValue('2024')"
+        >2024</a>
+        <a
+          class="dropdown-item"
           @click="emitValue('2023')"
         >2023</a>
         <a
@@ -153,7 +157,7 @@ only screen and (max-width: 760px),
 (min-device-width: 768px) and (max-device-width: 1024px)  {
   
   .imagery-dropdown {
-    top: 54px;
+    /* top: 54px; */
     right: 50px;
   }
 

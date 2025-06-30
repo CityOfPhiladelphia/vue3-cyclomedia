@@ -27,11 +27,15 @@ a {
 }
 
 .main {
-  height: calc(100vh - 50px);
+  height: calc(100vh - 0px);
   display: flex;
   flex-direction: row;
-  padding-top: 42px !important;
-  margin-top: 0px !important;
+  padding-top: 0px !important;
+  // margin-top: 0px !important;
+}
+
+.cyclomedia-holder-mobile {
+  height: 250px;
 }
 
 .cyclomedia-holder {
@@ -212,9 +216,9 @@ only screen and (max-width: 760px),
 
   @supports (-webkit-touch-callout: none) {
     /* CSS specific to iOS devices */ 
-    .main {
-      margin-top: 42px !important;
-    }
+    // .main {
+    //   margin-top: 42px !important;
+    // }
   }
   
   @supports not (-webkit-touch-callout: none) {
@@ -241,10 +245,14 @@ only screen and (max-width: 760px),
   }
 
   .main {
-    height: auto;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
+    padding-bottom: 0px !important;
+  }
+
+  .cyclomedia-holder {
+    height: 50% !important;
   }
 
   .topics-holder {
@@ -274,7 +282,7 @@ only screen and (max-width: 760px),
   }
 
   .map-panel-holder {
-    padding-top: 28px !important;
+    // padding-top: 28px !important;
     width: 100%;
     flex-grow: 1;
     margin-bottom: 0px;
@@ -300,7 +308,7 @@ only screen and (max-width: 760px),
   }
 
   .map-panel {
-    height: 300px;
+    height: 100%;
   }
 
   .map-panel.cyclomedia-eagleview {

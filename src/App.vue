@@ -10,7 +10,6 @@ const MainStore = useMainStore();
 
 import AddressSearchControl from '@/components/AddressSearchControl.vue';
 
-
 if (!import.meta.env.VITE_PUBLICPATH) {
   MainStore.publicPath = '/';
 } else {
@@ -43,6 +42,10 @@ onMounted(async () => {
   if (route.name === 'not-found') {
     router.push({ name: 'home' });
   }
+  if (route.name === 'address') {
+    // router.replace({ name: 'search', query: { address: MainStore.addressSearchValue }})
+    router.replace({ name: 'search', query: { address: route.params.address } });
+  }
 
   const main = document.getElementById('main');
   main.scrollTop = -main.scrollHeight;
@@ -65,7 +68,6 @@ const handleWindowResize = () => {
   };
   MainStore.windowDimensions = dim;
 }
-
 
 const links = [
   {
@@ -106,7 +108,7 @@ const links = [
 
     <!-- MAP PANEL ON LEFT - right now only contains the address input -->
     <div
-      v-show="!fullScreenCyclomediaEnabled"
+      v-if="!isMobileDevice() && !fullScreenCyclomediaEnabled"
       class="map-panel-holder"
       :class="fullScreenMapEnabled ? 'topics-holder-full' : ''"
     >
@@ -118,11 +120,15 @@ const links = [
       class="cyclomedia-holder"
       :class="fullScreenCyclomediaEnabled ? 'cyclomedia-holder-full' : ''"
     >
-      <cyclomedia-panel
-        @update-camera-yaw="updateCyclomediaCameraAngle"
-        @update-camera-h-fov="updateCyclomediaCameraViewcone"
-        @update-camera-lng-lat="updateCyclomediaCameraLngLat"
-      />
+      <cyclomedia-panel />
+    </div>
+
+    <div
+      v-if="isMobileDevice()"
+      class="map-panel-holder"
+      :class="fullScreenMapEnabled ? 'topics-holder-full' : ''"
+    >
+      <map-panel />
     </div>
 
     

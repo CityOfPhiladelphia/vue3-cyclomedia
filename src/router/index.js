@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from '@/App.vue'
 
 import { useMainStore } from '@/stores/MainStore';
+import { useMapStore } from '@/stores/MapStore';
 import { useGeocodeStore } from '@/stores/GeocodeStore';
 
 import useRouting from '@/composables/useRouting';
@@ -34,6 +35,19 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: App,
+      beforeEnter: async (to, from) => {
+        const { lng, lat } = to.query;
+        if (import.meta.env.VITE_DEBUG == 'true') console.log('home route beforeEnter, to.query:', to.query, 'lng:', lng, 'lat:', lat);
+        const MapStore = useMapStore();
+        if (lat && lng) {
+          MapStore.currentAddressCoords = [lng, lat];
+        }
+        // if (import.meta.env.VITE_DEBUG == 'true') console.log('home route beforeEnter, to:', to, 'from:', from);
+        // const MainStore = useMainStore();
+        // MainStore.setCurrentAddress(null);
+        // MainStore.initialDatafetchComplete = false;
+        // routeApp(router);
+      },
     },
     {
       path: '/search',
@@ -64,5 +78,33 @@ const router = createRouter({
     },
   ]
 })
+
+// router.afterEach(async (to, from) => {
+//   if (import.meta.env.VITE_DEBUG == 'true') console.log('router afterEach to:', to, 'from:', from);
+//   const MainStore = useMainStore();
+//   // if (to.query.lang !== from.query.lang) {
+//   //   MainStore.currentLang = to.query.lang;
+//   // }
+//   if (to.name === 'address-or-topic') {
+//     return;
+//   } else if (to.name !== 'not-found' && to.name !== 'search') {
+//     await getGeocodeAndPutInStore(to.params.address);
+//     MainStore.addressSearchRunning = false;
+//     // await dataFetch(to, from);
+//     // let pageTitle = MainStore.appVersion + '.phila.gov';
+//     // let pageTitle = MainStore.appVersion.charAt(0).toUpperCase() + MainStore.appVersion.slice(1);
+//     // for (let param of Object.keys(to.params)) {
+//     //   pageTitle += ' | ' + to.params[param];
+//     // }
+//     // MainStore.pageTitle = pageTitle;
+//   } // else if (to.name == 'not-found') {
+//   //   MainStore.currentTopic = "property"
+//   //   MainStore.currentAddress = null;
+//   //   MainStore.currentParcelGeocodeParameter = null;
+//   //   MainStore.currentParcelAddress = null;
+//   //   MainStore.otherParcelAddress = null;
+//   //   MainStore.otherParcelGeocodeParameter = null;
+//   // }
+// });
 
 export default router

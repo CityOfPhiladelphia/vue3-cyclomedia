@@ -32,6 +32,30 @@ import ImageryToggleControl from '@/components/ImageryToggleControl.vue';
 import ImageryDropdownControl from '@/components/ImageryDropdownControl.vue';
 import CyclomediaRecordingsClient from '@/components/recordings-client.js';
 
+watch(
+  () => MapStore.cyclomediaCameraYaw,
+  newYaw => {
+    if (import.meta.env.VITE_DEBUG == 'true') console.log('MapPanel.vue watch cyclomediaCameraYaw, newYaw:', newYaw);
+    updateCyclomediaCameraAngle(newYaw);
+    updateCyclomediaCameraViewcone(MapStore.cyclomediaCameraHFov, newYaw);
+  }
+)
+
+watch(
+  () => MapStore.cyclomediaCameraHFov,
+  newHFov => {
+    if (import.meta.env.VITE_DEBUG == 'true') console.log('MapPanel.vue watch cyclomediaCameraHFov, newHFov:', newHFov);
+    updateCyclomediaCameraViewcone(newHFov, MapStore.cyclomediaCameraYaw);
+  }
+)
+
+watch(
+  () => MapStore.cyclomediaCameraLngLat,
+  newLngLat => {
+    if (import.meta.env.VITE_DEBUG == 'true') console.log('MapPanel.vue watch cyclomediaCameraLngLat, newLngLat:', newLngLat);
+    updateCyclomediaCameraLngLat(newLngLat);
+  }
+)
 
 let map;
 
@@ -45,19 +69,36 @@ const cameraSrc = computed(() => {
   return MainStore.publicPath + 'images/camera.png';
 })
 
+const center = computed(() => {
+  if (GeocodeStore.aisData.features && GeocodeStore.aisData.features[0]) {
+    return GeocodeStore.aisData.features[0].geometry.coordinates;
+  } else if (MapStore.currentAddressCoords.length) {
+    return MapStore.currentAddressCoords;
+  } else {
+    return $config.cityCenterCoords;
+  }
+})
+
+const zoom = computed(() => {
+  if (route.params.address || MapStore.currentAddressCoords.length) {
+    return 17;
+  } else {
+    return 12;
+  }
+})
+
 onMounted(async () => {
   // if (import.meta.env.VITE_DEBUG == 'true') console.log('Map.vue onMounted route.params.topic:', route.params.topic, 'route.params.address:', route.params.address);
   
   // create the maplibre map
   // let currentTopicMapStyle = route.params.topic ? $config.topicStyles[route.params.topic] : 'pwdDrawnMapStyle';
-  let zoom = route.params.address ? 17 : 12;
+  // let zoom = route.params.address || MapStore.currentAddressCoords.length ? 17 : 12;
 
   map = new maplibregl.Map({
     container: 'map',
     style: $config['pwdDrawnMapStyle'],
-    center: $config.cityCenterCoords,
-    // center: [-75.163471, 39.953338],
-    zoom: zoom,
+    center: center.value,
+    zoom: zoom.value,
     minZoom: 6,
     maxZoom: 22,
     attributionControl: false,
@@ -66,6 +107,11 @@ onMounted(async () => {
   map.on('load', () => {
     let canvas = document.querySelector(".maplibregl-canvas");
     canvas.setAttribute('tabindex', -1);
+    map.setCenter(center.value);
+    map.setZoom(zoom.value);
+    if (map.getZoom() > 16.5) {
+      updateCyclomediaRecordings();
+    }
   })
 
   // add the address marker and camera icon sources
@@ -124,6 +170,7 @@ onMounted(async () => {
   if (MapStore.cyclomediaCameraHFov && MapStore.cyclomediaCameraYaw) {
     if (import.meta.env.VITE_DEBUG == 'true') console.log('calling updateCyclomediaCameraViewcone');
     updateCyclomediaCameraViewcone(MapStore.cyclomediaCameraHFov, MapStore.cyclomediaCameraYaw);
+    updateCyclomediaCameraAngle(MapStore.cyclomediaCameraYaw);
   }
 
 });
@@ -135,6 +182,7 @@ watch(
     if (newAddress.features && newAddress.features[0].geometry.coordinates.length) {
       const newCoords = newAddress.features[0].geometry.coordinates;
       
+      MapStore.currentAddressCoords = newCoords;
       map.setCenter(newCoords);
       map.setZoom(17);
 
@@ -167,10 +215,10 @@ const toggleImagery = () => {
     map.removeLayer(imagerySelected.value);
     map.removeLayer('imageryLabels');
     if (!route.params.topic) {
-      map.setStyle($config['pwdDrawnMapStyle']);
-      if (pwdCoordinates.value.length) {
-        map.getSource('addressMarker').setData(point(pwdCoordinates.value));
-      }
+      // map.setStyle($config['pwdDrawnMapStyle']);
+      // if (pwdCoordinates.value.length) {
+      //   map.getSource('addressMarker').setData(point(pwdCoordinates.value));
+      // }
     }
   }
 }
@@ -230,13 +278,13 @@ const updateCyclomediaRecordings = async () => {
 // everything for adding, moving, and orienting the cyclomedia camera icon and viewcone
 const updateCyclomediaCameraLngLat = (lngLat) => {
   // if (import.meta.env.VITE_DEBUG == 'true') console.log('updateCyclomediaCameraLngLat is running, lngLat:', lngLat);
-  if (!MapStore.cyclomediaOn) {
-    return;
-  } else {
-    const theData = point(lngLat);
-    map.getSource('cyclomediaCamera').setData(theData);
-    $config.dorDrawnMapStyle.sources.cyclomediaCamera.data = theData;
-  }
+  // if (!MapStore.cyclomediaOn) {
+  //   return;
+  // } else {
+  const theData = point(lngLat);
+  map.getSource('cyclomediaCamera').setData(theData);
+  $config.dorDrawnMapStyle.sources.cyclomediaCamera.data = theData;
+  // }
 }
 
 const updateCyclomediaCameraAngle = (newOrientation) => {
@@ -248,7 +296,7 @@ const updateCyclomediaCameraAngle = (newOrientation) => {
 }
 
 const updateCyclomediaCameraViewcone = (cycloHFov, cycloYaw) => {
-  if (import.meta.env.VITE_DEBUG === 'true') console.log('updateCyclomediaCameraViewcone is running');
+  if (import.meta.env.VITE_DEBUG === 'true') console.log('updateCyclomediaCameraViewcone is running cycloHFov:', cycloHFov, 'cycloYaw:', cycloYaw);
   const halfAngle = cycloHFov / 2.0;
   let angle1 = cycloYaw - halfAngle;
   let angle2 = cycloYaw + halfAngle;
@@ -311,21 +359,16 @@ const updateCyclomediaCameraViewcone = (cycloHFov, cycloYaw) => {
 </script>
 
 <template>
-  <!-- <div
-    id="map-panel"
-    :class="mapPanelClass"
-  > -->
-    <full-screen-map-toggle-tab />
-    <div
-      id="map"
-      class="map map-class"
-    >
-      <ImageryToggleControl @toggle-imagery="toggleImagery" />
-      <ImageryDropdownControl
-        v-if="MapStore.imageryOn"
-        @set-imagery="setImagery"
-      />
-    </div>
-  <!-- </div> -->
+  <full-screen-map-toggle-tab />
+  <div
+    id="map"
+    class="map map-panel"
+  >
+    <ImageryToggleControl @toggle-imagery="toggleImagery" />
+    <ImageryDropdownControl
+      v-if="MapStore.imageryOn"
+      @set-imagery="setImagery"
+    />
+  </div>
   
 </template>

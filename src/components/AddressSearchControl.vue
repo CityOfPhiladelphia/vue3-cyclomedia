@@ -1,4 +1,7 @@
 <script setup>
+
+import isMobileDevice from '../util/is-mobile-device';
+
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -33,7 +36,13 @@ const fullScreenMapEnabled = computed(() => {
     
 const holderWidth = computed(() => {
   // if (fullScreenTopicsEnabled.value || fullScreenMapEnabled.value) {
-  return '40%';
+  let value;
+  if (!isMobileDevice()) {
+    value = '40%'
+  } else {
+    value = '80%';
+  }
+  return value;
   // } else {
   //   return '70%';
   // }
@@ -41,7 +50,7 @@ const holderWidth = computed(() => {
 
 const yPosition = computed(() => {
   // if (fullScreenTopicsEnabled.value) {
-    return '88px';
+    return '100px';
   // } else {
   //   return '10px';
   // }

@@ -1,3 +1,4 @@
+import { set } from 'date-fns';
 import { defineStore } from 'pinia';
 import proj4 from 'proj4';
 
@@ -10,7 +11,7 @@ export const useMapStore = defineStore("MapStore", {
       addressMarker: null,
       initialized: false,
       imageryOn: false,
-      imagerySelected: '2023',
+      imagerySelected: '2024',
       cyclomediaOn: false,
       cyclomediaInitialized: false,
       cyclomediaRecordingsOn: false,
@@ -29,6 +30,10 @@ export const useMapStore = defineStore("MapStore", {
     setCyclomediaCameraLngLat(lngLat, xyz) {
       this.cyclomediaCameraXyz = xyz;
       this.cyclomediaCameraLngLat = lngLat;
+    },
+    setCyclomediaCameraHFov(hfov) {
+      if (import.meta.env.VITE_DEBUG == 'true') console.log('MapStore.setCyclomediaCameraHFov is running, hfov:', hfov);
+      this.cyclomediaCameraHFov = hfov;
     },
     setMap(map) {
       if (import.meta.env.VITE_DEBUG == 'true') console.log('MapStore.setMap is running, map:', map);
