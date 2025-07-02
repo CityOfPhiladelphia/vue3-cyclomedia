@@ -26,10 +26,6 @@ const hasAddress = computed(() => {
   return MainStore.currentAddress != '';
 });
 
-const fullScreenTopicsEnabled = computed(() => {
-  return MainStore.fullScreenTopicsEnabled;
-});
-  
 const fullScreenMapEnabled = computed(() => {
   return MainStore.fullScreenMapEnabled;
 });
@@ -37,10 +33,10 @@ const fullScreenMapEnabled = computed(() => {
 const holderWidth = computed(() => {
   // if (fullScreenTopicsEnabled.value || fullScreenMapEnabled.value) {
   let value;
-  if (!isMobileDevice()) {
-    value = '40%'
+  if (isMobileDevice() || MainStore.windowDimensions.width <= 768) {
+    value = '80%'
   } else {
-    value = '80%';
+    value = '40%';
   }
   return value;
   // } else {

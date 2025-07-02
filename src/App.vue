@@ -94,9 +94,9 @@ const links = [
     :is-sticky="true"
     :is-fluid="true"
   >
-    <template #mobile-nav>
+    <!-- <template #mobile-nav>
       <mobile-nav :links="links" />
-    </template>
+    </template> -->
   </app-header>
 
   <!-- MAIN CONTENT -->
@@ -108,7 +108,7 @@ const links = [
 
     <!-- MAP PANEL ON LEFT - right now only contains the address input -->
     <div
-      v-if="!isMobileDevice() && !fullScreenCyclomediaEnabled"
+      v-if="!isMobileDevice() && MainStore.windowDimensions.width > 768 && !fullScreenCyclomediaEnabled"
       class="map-panel-holder"
       :class="fullScreenMapEnabled ? 'topics-holder-full' : ''"
     >
@@ -116,15 +116,15 @@ const links = [
     </div>
 
     <div
-      v-show="!fullScreenMapEnabled"
+      v-show="!fullScreenMapEnabled || isMobileDevice() || MainStore.windowDimensions.width <= 768"
       class="cyclomedia-holder"
-      :class="fullScreenCyclomediaEnabled ? 'cyclomedia-holder-full' : ''"
+      :class="fullScreenCyclomediaEnabled || MainStore.windowDimensions.width <= 768 ? 'cyclomedia-holder-full' : ''"
     >
       <cyclomedia-panel />
     </div>
 
     <div
-      v-if="isMobileDevice()"
+      v-if="isMobileDevice() || MainStore.windowDimensions.width <= 768"
       class="map-panel-holder"
       :class="fullScreenMapEnabled ? 'topics-holder-full' : ''"
     >
@@ -138,8 +138,8 @@ const links = [
   <app-footer
     :is-sticky="true"
     :is-hidden-mobile="true"
-    :links="links"
-  />
+    />
+    <!-- :links="links" -->
 </template>
 
 <style scoped>
