@@ -47,18 +47,24 @@ const setNewLocation = async (coords) => {
   const today = new Date();
   const year = MapStore.cyclomediaYear;
   let thisYear, lastYear;
+  let params = {};
   if (year) {
     lastYear = `${year}-01-01`;
     thisYear = `${year + 1}-01-01`;
-  } else {
-    lastYear = format(subYears(today, 1), 'yyyy-MM-dd');
-    thisYear = format(today, 'yyyy-MM-dd');
-  }
-  const response = await StreetSmartApi.open(
-    {
-      coordinate: [coords[0],coords[1]],
+    params = {
+      coordinate: coords,
       dateRange: { from: lastYear, to: thisYear },
-    },
+    };
+  } else {
+    // lastYear = format(subYears(today, 2), 'yyyy-MM-dd');
+    // thisYear = format(today, 'yyyy-MM-dd');
+    params = {
+      coordinate: coords,
+    };
+  }
+
+  const response = await StreetSmartApi.open(
+    params,
     {
       viewerType: StreetSmartApi.ViewerType.PANORAMA,
       srs: 'EPSG:2272',
