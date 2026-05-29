@@ -120,6 +120,7 @@ defineExpose({ focusFirst });
 
 .search-suggestion {
   padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
   cursor: pointer;
   color: #000;
   outline: none;
