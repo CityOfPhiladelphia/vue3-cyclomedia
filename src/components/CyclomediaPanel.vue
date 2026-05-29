@@ -41,8 +41,6 @@ watch(
   }
 )
 
-const navBarExpanded = ref(false);
-
 const setNewLocation = async (coords) => {
   const today = new Date();
   const year = MapStore.cyclomediaYear;
@@ -71,11 +69,11 @@ const setNewLocation = async (coords) => {
       panoramaViewer: {
         closable: false,
         maximizable: false,
+        navbarVisible: false,
       },
     }
   )
   let viewer = response[0];
-  viewer.toggleNavbarExpanded(navBarExpanded.value);
   viewer.toggleButtonEnabled('panorama.elevation', false);
   viewer.toggleButtonEnabled('panorama.reportBlurring', false);
 
