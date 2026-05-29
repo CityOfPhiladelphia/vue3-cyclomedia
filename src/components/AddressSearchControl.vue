@@ -117,11 +117,12 @@ onBeforeUnmount(() => {
           <input
             :id="inputId"
             ref="inputRef"
-            v-model="MainStore.addressSearchValue"
+            :value="MainStore.addressSearchValue"
             class="input address-input"
             type="text"
             placeholder="Search an address, OPA, or DOR number"
             autocomplete="off"
+            @input="MainStore.addressSearchValue = $event.target.value"
             @keydown.enter="replaceRoute(MainStore.addressSearchValue)"
             @keydown="onInputKeydown"
           >
