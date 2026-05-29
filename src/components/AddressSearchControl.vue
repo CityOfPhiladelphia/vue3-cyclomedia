@@ -2,10 +2,13 @@
 
 import isMobileDevice from '../util/is-mobile-device';
 
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, toRef } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useMainStore } from '@/stores/MainStore.js'
+import { useSearchSuggestions } from '@/composables/useSearchSuggestions.js';
+import SearchSuggestions from '@/components/SearchSuggestions.vue';
+
 const MainStore = useMainStore();
 
 const router = useRouter();
@@ -16,6 +19,13 @@ defineProps({
     default: 'address-search-input',
   },
 });
+
+const inputRef = ref(null);
+const wrapperRef = ref(null);
+const suggestionsRef = ref(null);
+
+const { searchSuggestions, hideSuggestions, dismissSuggestions } =
+  useSearchSuggestions(toRef(MainStore, 'addressSearchValue'));
 
 const clearAddress = () => {
   if (import.meta.env.VITE_DEBUG == 'true') console.log('clearAddress is running');
@@ -52,54 +62,103 @@ const yPosition = computed(() => {
   // }
 });
 
+const replaceRoute = (address) => {
+  router.replace({ name: 'search', query: { address }});
+}
+
+const onSelectSuggestion = (suggestion) => {
+  MainStore.addressSearchValue = suggestion;
+  dismissSuggestions();
+  replaceRoute(suggestion);
+}
+
+const onDismissSuggestions = () => {
+  hideSuggestions();
+  inputRef.value?.focus();
+}
+
+const onInputKeydown = (event) => {
+  if (event.key === 'ArrowDown' && searchSuggestions.value.length) {
+    event.preventDefault();
+    suggestionsRef.value?.focusFirst();
+  }
+}
+
+const onDocumentMouseDown = (event) => {
+  if (!searchSuggestions.value.length) return;
+  if (wrapperRef.value && !wrapperRef.value.contains(event.target)) {
+    hideSuggestions();
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('mousedown', onDocumentMouseDown);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', onDocumentMouseDown);
+});
+
 </script>
 
 <template>
   <div
+    ref="wrapperRef"
     :class="fullScreenMapEnabled ? 'holder holder-map' : 'holder holder-cyclomedia'"
     :style="{ top: yPosition, width: holderWidth }"
   >
-    <div class="field has-addons" :style="{ width: '100%' }">
-      <div class="control has-icons-right" :style="{ width: '100%' }">
-        <label
-          :for="inputId"
-          class="search-label"
-        >Search an address or OPA number</label>
-        <input
-          :id="inputId"
-          v-model="MainStore.addressSearchValue"
-          class="input address-input"
-          type="text"
-          placeholder="Search an address, OPA, or DOR number"
-          @keydown.enter="router.replace({ name: 'search', query: { address: MainStore.addressSearchValue }})"
-        >
+    <div class="search-wrapper">
+      <div class="field has-addons" :style="{ width: '100%' }">
+        <div class="control has-icons-right" :style="{ width: '100%' }">
+          <label
+            :for="inputId"
+            class="search-label"
+          >Search an address or OPA number</label>
+          <input
+            :id="inputId"
+            ref="inputRef"
+            v-model="MainStore.addressSearchValue"
+            class="input address-input"
+            type="text"
+            placeholder="Search an address, OPA, or DOR number"
+            autocomplete="off"
+            @keydown.enter="replaceRoute(MainStore.addressSearchValue)"
+            @keydown="onInputKeydown"
+          >
+        </div>
+        <div class="control">
+          <button
+            v-if="MainStore.addressSearchValue != ''"
+            class="button is-info address-clear-button"
+            title="Clear Address Button"
+            @click="clearAddress"
+          >
+            <font-awesome-icon
+              :icon="['fas', 'times']"
+              size="xl"
+            />
+          </button>
+        </div>
+        <div class="control">
+          <button
+            class="button is-info address-search-button"
+            type="submit"
+            title="Address Search Button"
+            @click="replaceRoute(MainStore.addressSearchValue)"
+          >
+            <font-awesome-icon
+              :icon="['fas', 'search']"
+              size="xl"
+            />
+          </button>
+        </div>
       </div>
-      <div class="control">
-        <button
-          v-if="MainStore.addressSearchValue != ''"
-          class="button is-info address-clear-button"
-          title="Clear Address Button"
-          @click="clearAddress"
-        >
-          <font-awesome-icon
-            :icon="['fas', 'times']"
-            size="xl"
-          />
-        </button>
-      </div>
-      <div class="control">
-        <button
-          class="button is-info address-search-button"
-          type="submit"
-          title="Address Search Button"
-          @click="router.replace({ name: 'search', query: { address: MainStore.addressSearchValue }})"
-        >
-          <font-awesome-icon
-            :icon="['fas', 'search']"
-            size="xl"
-          />
-        </button>
-      </div>
+      <SearchSuggestions
+        ref="suggestionsRef"
+        :suggestions="searchSuggestions"
+        @select="onSelectSuggestion"
+        @dismiss="onDismissSuggestions"
+      />
     </div>
   </div>
 </template>
@@ -125,6 +184,15 @@ const yPosition = computed(() => {
 
 .holder-cyclomedia {
   right: 10px;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-wrapper .field {
+  margin-bottom: 0;
 }
 
 .address-input {
