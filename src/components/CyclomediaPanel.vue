@@ -86,21 +86,21 @@ const setNewLocation = async (coords) => {
   }
 
   viewer.on('VIEW_CHANGE', function(e) {
-    // if (import.meta.env.VITE_DEBUG == 'true') console.log('on VIEW_CHANGE fired, type:', e.type, 'detail:', e.detail, 'viewer.props:', viewer.props, 'viewer.props.orientation.xyz:', viewer.props.orientation.xyz, 'MapStore.cyclomediaCameraXyz:', MapStore.cyclomediaCameraXyz);
+    // if (import.meta.env.VITE_DEBUG == 'true') console.log('on VIEW_CHANGE fired, type:', e.type, 'detail:', e.detail, 'viewer.props:', viewer.props, 'viewer.props.recording.xyz:', viewer.props.recording.xyz, 'MapStore.cyclomediaCameraXyz:', MapStore.cyclomediaCameraXyz);
     MapStore.cyclomediaCameraYaw = e.detail.yaw;
     MapStore.cyclomediaCameraHFov = e.detail.hFov;
-    if (viewer.props.orientation.xyz !== MapStore.cyclomediaCameraXyz) {
-      const lngLat = [ viewer.props.orientation.xyz[0], viewer.props.orientation.xyz[1] ];
-      MapStore.setCyclomediaCameraLngLat(lngLat, viewer.props.orientation.xyz);
+    if (viewer.props.recording.xyz !== MapStore.cyclomediaCameraXyz) {
+      const lngLat = [ viewer.props.recording.xyz[0], viewer.props.recording.xyz[1] ];
+      MapStore.setCyclomediaCameraLngLat(lngLat, viewer.props.recording.xyz);
     }
   });
 
   viewer.on('VIEW_LOAD_END', function(e) {
     // if (import.meta.env.VITE_DEBUG == 'true') console.log('on VIEW_LOAD_END fired, type:', e.type, 'e:', e, 'viewer.props.orientation:', viewer.props.orientation, 'viewer.props:', viewer.props);
     MapStore.cyclomediaYear = viewer.props.recording.year;
-    if (viewer.props.orientation.xyz !== MapStore.cyclomediaCameraXyz) {
-      const lngLat = [ viewer.props.orientation.xyz[0], viewer.props.orientation.xyz[1] ];
-      MapStore.setCyclomediaCameraLngLat(lngLat, viewer.props.orientation.xyz);
+    if (viewer.props.recording.xyz !== MapStore.cyclomediaCameraXyz) {
+      const lngLat = [ viewer.props.recording.xyz[0], viewer.props.recording.xyz[1] ];
+      MapStore.setCyclomediaCameraLngLat(lngLat, viewer.props.recording.xyz);
     }
   });
 }
